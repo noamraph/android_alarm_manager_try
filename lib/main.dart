@@ -1,7 +1,25 @@
+import 'dart:isolate';
+
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
 import 'package:flutter/material.dart';
 
-void main() {
+void printHello() {
+  final DateTime now = DateTime.now();
+  final int isolateId = Isolate.current.hashCode;
+  debugPrint("[$now] Hello, world! isolate=$isolateId function='$printHello'");
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await AndroidAlarmManager.initialize();
   runApp(const MyApp());
+  const int helloAlarmID = 0;
+  await AndroidAlarmManager.periodic(
+      const Duration(seconds: 10), helloAlarmID, printHello);
+  debugPrint('calling printHello from main isolate');
+  printHello();
 }
 
 class MyApp extends StatelessWidget {
